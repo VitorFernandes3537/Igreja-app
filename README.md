@@ -1,4 +1,4 @@
-# README — Adbrás App (Monorepo)
+# README - Adbrás App
 
 > **Pastas:** `api/`, `frontend/`, `private/`  
 > **Este arquivo** dá a visão geral do projeto e como rodar tudo.  
@@ -29,21 +29,105 @@ O monorepo facilita rodar as duas partes juntas, manter documentação e padroni
 ---
 
 ## Estrutura de pastas
+
+Abaixo está a **árvore recomendada** da raiz do repositório e, em seguida, um **guia explicando cada pasta/arquivo** do topo do projeto.
+
 ```bash
 adbras-app/
-  api/                     # API (Express + Prisma + MySQL)
-    prisma/
-    src/
-    docs/
-    README.md
-  frontend/                # Frontend (Vite + React + Tailwind + TS)
-    src/
-    public/
-    docs/
-    README.md
+  api/
+    ...                  # código e docs específicos da API
+  frontend/
+    ...                  # código e docs específicos do Frontend
+  docs/
+    ADR/
+    RUNBOOKS/
+    ARCHITECTURE.md
+    DEPLOY.md
   .gitignore
-  README.md                # este arquivo
+  README.md
+  package.json
 ```
+
+> Observações:
+> - `node_modules/` e `dist/` ficam **dentro** de `api/` e `frontend/` e são **ignorados** no Git (via `.gitignore`).
+> - `private/` é **pessoal** (não versionado).  
+> - `docs/` na raiz é para documentação **transversal** (envolve front + API ou arquitetura do sistema).
+
+---
+
+## Guia de pastas (o que vai em cada uma)
+
+### `api/`
+Projeto da **API** (Node.js + Express + Prisma + MySQL).
+- Código-fonte (`src/`), schema e migrações (`prisma/`), documentação local (`api/docs/`) e `api/README.md` (instruções específicas da API).
+- Tudo que é **servidor**, endpoints, acesso a banco e decisões de back-end vive aqui.
+
+### `frontend/`
+Projeto do **Frontend** (Vite + React + TypeScript + Tailwind).
+- Código-fonte (`src/`), assets públicos (`public/`), documentação local (`frontend/docs/`) e `frontend/README.md` (instruções específicas do front).
+- Tudo que é **interface**, estilos e integrações do cliente vive aqui.
+
+### `docs/` (raiz)
+Documentação **geral do sistema** (não específica de um lado só).
+- `ADR/`: **Architecture Decision Records** que impactam o sistema como um todo (ex.: autenticação, monorepo, padrão de versionamento).  
+- `RUNBOOKS/`: procedimentos **operacionais de stack completo** (subir todo o ambiente local, pipeline de deploy, backups).  
+- `ARCHITECTURE.md`: visão macro (diagrama de componentes, fluxos de dados, limites de contexto).  
+- `DEPLOY.md`: estratégia e checklist de deploy (ambientes, variáveis, passos).
+
+> Regra prática: se o documento **vale para o sistema inteiro**, ele fica aqui; se é específico de **API** ou **Frontend**, fica nos `docs/` da respectiva pasta.
+
+---
+
+## Arquivos na raiz
+
+### `.gitignore`
+Ignora artefatos gerados e segredos em **todo o repo**. Exemplo recomendado:
+```js
+**/node_modules/
+**/dist/
+**/.env
+**/.env.*
+.vscode/
+.DS_Store
+```
+
+### `README.md`
+Documento **principal** do repositório:
+- Visão geral do projeto e da arquitetura.
+- Como rodar **API** e **Frontend** em dev (com links para READMEs locais).
+- Variáveis de ambiente e troubleshooting gerais.
+- Links para `api/README.md`, `frontend/README.md` e `docs/`.
+
+### `package.json` (raiz)
+Scripts de **orquestração** (opcional) para facilitar rodar tudo junto:
+```js
+{
+  "name": "adbras-app",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n FRONT,API -c green,blue \"npm --prefix frontend run dev\" \"npm --prefix api run dev\"",
+    "dev:front": "npm --prefix frontend run dev",
+    "dev:api": "npm --prefix api run dev",
+    "build": "npm --prefix frontend run build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}
+```
+> Dica: manter scripts **somente** de orquestração aqui; scripts específicos ficam nos `package.json` de `api/` e `frontend/`.
+
+### `package-lock.json`
+Lockfile da raiz (se você instalar dependências na raiz, ex.: `concurrently`).  
+Os lockfiles de `api/` e `frontend/` pertencem a cada projeto.
+
+---
+
+## Fluxo recomendado na raiz
+1. Manter **documentação geral** em `docs/` (ADRs e Runbooks de stack).
+2. **Orquestrar** dev com scripts da raiz (`npm run dev`) quando útil.
+3. Deixar **detalhes específicos** nos READMEs e docs de cada subprojeto.
+4. Garantir que `.env` **não** seja versionado em nenhum subprojeto.
 
 ---
 

@@ -29,13 +29,8 @@ node_modules/
 *.pem
 *.key
 
-# IDEs
+# IDEs, Editor directories and files
 .idea/
-
-# Testes
-coverage/
-
-# Editor directories and files
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -46,6 +41,9 @@ coverage/
 *.sln
 *.sw?
 Thumbs.db
+
+# Testes
+coverage/
 
 # Logs
 Private/

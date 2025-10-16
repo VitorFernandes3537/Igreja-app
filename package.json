@@ -1,0 +1,14 @@
+{
+  "name": "app-igreja",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n FRONT,API -c green,blue \"npm --prefix frontend run dev\" \"npm --prefix api run dev\"",
+    "dev:front": "npm --prefix frontend run dev",
+    "dev:api": "npm --prefix api run dev",
+    "build": "npm --prefix frontend run build",
+    "install:all": "npm --prefix api install && npm --prefix frontend install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
