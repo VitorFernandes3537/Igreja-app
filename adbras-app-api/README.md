@@ -126,9 +126,9 @@ npx prisma generate
     -- id, usuario_id?, igreja_id?, acao, descricao, criado_em
 
 # Conveções
--- Soft delete: utilizar `deletado_em` (nulo = ativo). Em listas, filtrar por `deletado_em: null`
--- Auditoria: registrar ações relevantes com `acao` e `descricao`
--- Respostas padrão: `{ data }` em sucesso; `{ error }` em erro com status HTTP correto.
--- Prisma Client: usar a instância única exportada por `src/lib/prisma.js`
+- Soft delete: utilizar `deletado_em` (nulo = ativo). Em listas, filtrar por `deletado_em: null`
+- Auditoria: registrar ações relevantes com `acao` e `descricao`
+- Respostas padrão: `{ data }` em sucesso; `{ error }` em erro com status HTTP correto.
+- Prisma Client: usar a instância única exportada por `src/lib/prisma.js`
 
 
