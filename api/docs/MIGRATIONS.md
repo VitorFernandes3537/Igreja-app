@@ -1,14 +1,16 @@
 # Guia de migrações - Prisma
 
 ## Fluxo Recomendado (dev)
-- 1. Editar `prisma/schema.prisma`.
-- 2. Validar e formatar:
-    ```bash
+1. Editar `prisma/schema.prisma`.
+2. Validar e formatar:
+```bash
     npx prisma validate
     npx prisma format
-- 3. Gerar e aplicar migração:
+```
+3. Gerar e aplicar migração:
+```bash
     npx prisma migrate dev --name <nome_da_migracao>
-    
+``` 
 - Exemplos de nomes:
     - init_schema
     - create_base_models_membro_igreja
@@ -17,13 +19,16 @@
 
 **Reset do banco** (Apenas dev)
 - Quando o schema mudou de forma destrutiva (e não dados a preservar):
+
+```bash
     npm run db:reset
     # ou   
     npx prisma migrate reset
-- isso apaga o banco, replica todas as migrações e roda o seed
+```
+> isso apaga o banco, replica todas as migrações e roda o seed
 
 **Boas Práticas**
 - Preferir mudanças incrementais (migrações pequenas e nomeadas).
 - Nunca subir migração "quebrando tudo" em ambientes compartilhados
-- em Windows, pare o servidor antes de prisma generate/migrate.
+- em Windows, pare o servidor antes de `prisma generate/migrate`.
 

@@ -56,8 +56,7 @@ Ou tentar gerar Cliente com o servidor rodando, ideal dar um `Ctrl + C` para des
 
 **Prevenção**
 - Não rodar `generate` com servidor ativo; adicione exceção no antívirus para a pasta do projeto
-    - (Opcional) so se estiver dando muito problema mesmo.
-
+    - (Opcional) só se estiver dando muito problema mesmo.
 
 # 3. Import de rotas com caminho errado
 **Sintoma**
@@ -87,7 +86,8 @@ Ou tentar gerar Cliente com o servidor rodando, ideal dar um `Ctrl + C` para des
 
 **Correção-base**
 - Verificar trecho .js em controllers.js
-    Comando: 
+- Comando:
+``` 
     async function listar`(req, res)` {
         try { /* ... */ }
         catch (err) {
@@ -96,7 +96,7 @@ Ou tentar gerar Cliente com o servidor rodando, ideal dar um `Ctrl + C` para des
     }
 
     `const prisma = require('../lib/prisma');`
-
+```
 # 6. argument handler must be a function (Express)
 
 **Causa**
