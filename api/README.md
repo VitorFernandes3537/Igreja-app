@@ -6,19 +6,19 @@
 
 ## Sumário
 
-- Stack(##Stack)
-- Pré-requisitos(##Pré-requisitos)
-- Configuração (.env)(##Configuração-(.env))
-- Scripts NPM(##Scripts-NPM)
-- Como rodar em desenvolvimento(##Como-rodar-em-desenvolvimento)
-- Estrutura de pastas(##Estrutura-de-pastas)
-- Prisma (ORM)(##Prisma-(ORM))
-  - Migrations(###Migrations)
-  - Prisma Studio(###Prisma-Studio)
-- CORS(##CORS)
-- Rotas disponíveis (atual) (##Rotas-disponíveis-(atual))
-- Erros comuns(##Erros-comuns)
-- Comentários do autor(##Comentários-do-Autor)
+- Stack(#stack)
+- Pré-requisitos(#pré-requisitos)
+- Configuração (.env)(#configuração-env)
+- Scripts NPM(#scripts-npm)
+- Como rodar em desenvolvimento(#como-rodar-em-desenvolvimento)
+- Estrutura de pastas(#estrutura-de-pastas)
+- Prisma (ORM)(#prisma-orm)
+  - Migrations(#migrations)
+  - Prisma Studio(#prisma-studio)
+- CORS(#cors)
+- Rotas disponíveis (atual) (#rotas-disponíveis-atual)
+- Erros comuns(#erros-comuns)
+- Comentários do autor(#comentários-do-autor)
 
 ---
 
