@@ -9,16 +9,16 @@
 ---
 
 ## Sumário
-- Visão geral
-- Estrutura de pastas
-- Pré-requisitos
-- Variáveis de ambiente (onde criar)
-- Como rodar em desenvolvimento
-- Build e pré-visualização (frontend)
-- Scripts na raiz (opcional)
-- Git e convenções rápidas
-- Troubleshooting
-- Documentação adicional
+- [Visão geral](#visão-geral)
+- [Estrutura de pastas](#estrutura-de-pastas)
+- [Pré-requisitos](#pré-requisitos)
+- [Variáveis de ambiente (onde criar)](#variáveis-de-ambiente-onde-criar)
+- [Como rodar em desenvolvimento](#como-rodar-em-desenvolvimento)
+- [Build e pré-visualização (frontend)](#build-e-pré-visualização-frontend)
+- [Scripts na raiz (opcional)](#scripts-na-raiz-opcional)
+- [Git e convenções rápidas](#git-e-convenções-rápidas)
+- [Troubleshooting](#troubleshooting)
+- [Documentação adicional](#documentação-adicional)
 
 ---
 

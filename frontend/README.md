@@ -2,19 +2,19 @@
 **Objetivo: Documentação exclusiva do frontend — setup, scripts, variáveis, estrutura, estilo, cliente HTTP e práticas locais.**
 
 ## Sumário
-- Stack(##Stack)
-- Pré-requisitos(##Pré-requisitos)
-- Configuração (.env)(##Configuração-(.env))
-- Scripts NPM(##Scripts-NPM)
-- Como rodar em desenvolvimento(##Como-rodar-em-desenvolvimento)
-- Build de produção(##Build-de-produção)
-- Estrutura de pastas(##Estrutura-de-pastas)
-- Guia de pastas (##Guia-de-pastas)
-- Estilo (Tailwind + PostCSS)##Estilo-(Tailwind-+-PostCSS)
-- Cliente HTTP (Axios)(##Cliente-HTTP-(Axios))
-- Alias de importação (@)(##Alias-de-importação-(@))
-- Problemas comuns(##Problemas-comuns)
-- Comentários do autor(##Comentários-do-autor)
+- [Stack](#stack)
+- [Pré-requisitos](#pré-requisitos)
+- [Configuração (.env)](#configuração-env)
+- [Scripts NPM](#scripts-npm)
+- [Como rodar em desenvolvimento](#como-rodar-em-desenvolvimento)
+- [Build de produção](#build-de-produção)
+- [Estrutura de pastas](#estrutura-de-pastas)
+- [Guia de pastas](#guia-de-pastas-o-que-vai-em-cada-uma-de-pastas)
+- [Estilo (Tailwind + PostCSS)](#estilo-tailwind--postcss)
+- [Cliente HTTP (Axios)](#cliente-http-Axios)
+- [Alias de importação (@)](#alias-de-importação-)
+- [Problemas comuns](#problemas-comuns)
+- [Comentários do autor](#comentários-do-autor)
 
 ---
 
