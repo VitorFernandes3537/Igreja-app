@@ -1,0 +1,126 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ENUMS (evitam strings soltas)
+
+enum role {
+  pastor
+  secretaria
+  dev
+  membro
+}
+
+enum status_membro {
+  ativo
+  inativo
+  suspenso
+}
+
+// MODELOS
+
+model usuario {
+  id         String @id @default(cuid())
+  email      String @unique
+  nome       String
+  senha_hash String
+
+  criado_em     DateTime @default(now())
+  Atualizado_em DateTime @updatedAt
+
+  // Relacionamento
+
+  link_usuario   igreja_usuario[]
+  logs_auditoria logs_auditoria[] @relation("usuario_logs")
+
+  @@index([email])
+}
+
+// Criação da tabela igreja
+model igreja {
+  id     String  @id @default(cuid())
+  nome   String
+  status Boolean @default(true)
+
+  criado_em     DateTime @default(now())
+  atualizado_em DateTime @updatedAt
+
+  // Relacionamento
+  membro         membro[]
+  user_links     igreja_usuario[]
+  logs_auditoria logs_auditoria[] @relation("igreja_logs")
+}
+
+model igreja_usuario {
+  id          String  @id @default(cuid())
+  usuario_id  String
+  igreja_id   String
+  role        role    @default(membro)
+  pode_delete Boolean @default(false)
+
+  criado_em     DateTime @default(now())
+  Atualizado_em DateTime @updatedAt
+
+  // Relacionamento                   
+  usuario usuario @relation(fields: [usuario_id], references: [id])
+  igreja  igreja  @relation(fields: [igreja_id], references: [id])
+
+  @@unique([usuario_id, igreja_id])
+  @@index([usuario_id])
+  @@index([igreja_id])
+}
+
+model membro {
+  id        String @id @default(cuid())
+  igreja_id String
+  igreja    igreja @relation(fields: [igreja_id], references: [id])
+
+  nome   String
+  email  String?       @unique
+  cpf    String?       @unique
+  status status_membro @default(ativo)
+
+  aniver_data DateTime?
+  telefone    String
+  endereco    String?
+  deletado_em DateTime?
+
+  criado_em     DateTime @default(now())
+  atualizado_em DateTime @updatedAt
+
+  @@index([igreja_id])
+  @@index([status])
+}
+
+model logs_auditoria {
+  id String @id @default(cuid())
+
+  // quem fez e em qual igreja (ambos opicionais por segurança)
+  usuario_id String?
+  igreja_id  String?
+
+  acao      String // ex: "membro.create"
+  descricao String // ex: "Criou membro tal na igreja Y"
+
+  criado_em DateTime @default(now())
+
+  // Relacionamento
+
+  usuario usuario? @relation("usuario_logs", fields: [usuario_id], references: [id])
+  igreja  igreja?  @relation("igreja_logs", fields: [igreja_id], references: [id])
+
+  @@index([usuario_id])
+  @@index([igreja_id])
+  @@index([acao])
+}

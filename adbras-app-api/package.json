@@ -1,0 +1,36 @@
+{
+  "name": "adbras-app-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./src/utils/server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "cross-env NODE_ENV=development nodemon ./src/utils/server.js --watch src --ext js,json",
+    "start": "cross-env NODE_ENV=production node ./src/utils/server.js",
+    "migrate:dev": "cross-env NODE_ENV=development npx prisma migrate dev",
+    "db:reset": "cross-env NODE_ENV=development npx prisma migrate reset -f",
+    "studio": "cross-env NODE_ENV=development npx prisma studio"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VitorFernandes3537/adbras-app-api.git"
+  },
+  "keywords": [],
+  "author": "VitorFer.dev",
+  "license": "ISC",
+  "bugs": { 
+    "url": "https://github.com/VitorFernandes3537/adbras-app-api/issues"
+  },
+  "homepage": "https://github.com/VitorFernandes3537/adbras-app-api#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "@prisma/client": "^6.17.1",
+    "cross-env": "^10.1.0",
+    "nodemon": "^3.1.10",
+    "prisma": "^6.17.1"
+  }
+}
