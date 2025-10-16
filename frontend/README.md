@@ -83,7 +83,7 @@ Gera artefatos estáticos em `dist/`:
 
 Para validar localmente:
 ```bash
-npm run preview
+  npm run preview
 ```
 
 ---

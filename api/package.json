@@ -18,11 +18,12 @@
   "keywords": [],
   "author": "VitorFer.dev",
   "license": "ISC",
-  "bugs": { 
+  "bugs": {
     "url": "https://github.com/VitorFernandes3537/adbras-app-api/issues"
   },
   "homepage": "https://github.com/VitorFernandes3537/adbras-app-api#readme",
   "dependencies": {
+    "app-igreja": "file:..",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0"
