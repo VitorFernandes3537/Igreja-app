@@ -7,7 +7,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-// definição do molde que define a forma e o tipo dos dados de User(usuário) e do AuthState(estado de autenticação)
+// definição do molde que define a forma/tipos dos dados de User(usuário) e do AuthState(estado de autenticação)
 type User = { id: string; nome: string; email: string }
 type AuthState = { user: User | null; token: string | null}
 
