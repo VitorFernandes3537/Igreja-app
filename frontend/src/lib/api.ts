@@ -89,6 +89,7 @@ Registra dois callbacks:
 */
 api.interceptors.response.use(
     (res: AxiosResponse) => res,
+    
     (error: AxiosError) => {
         if (error.response?.status === 401)
         return Promise.reject(error)
