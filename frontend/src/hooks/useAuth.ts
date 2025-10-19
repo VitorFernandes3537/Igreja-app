@@ -5,16 +5,14 @@
     useCallback memoriza as funções login e logout (mesma referência entre renders), útil para evitar re-renderizações desnecessárias em componentes filhos.
 */
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from 'react'
 
 // definição do molde que define a forma/tipos dos dados de User(usuário) e do AuthState(estado de autenticação)
 type User = { id: string; nome: string; email: string }
-type AuthState = { user: User | null; token: string | null}
+type AuthState = { user: User | null; token: string | null }
 
-
-export function useAuth(){
-
-    /* 
+export function useAuth() {
+  /* 
         crie um array que guarda os dois valores que useState retorna quando usado...
         o AuthState é o molde que eu define que o use state tem que ter, 
         o que eu digo aqui é: esse molde afeta o "auth" variável que guarda o estado atual da autenticação que nesse caso estamos definindo como
@@ -22,9 +20,9 @@ export function useAuth(){
         o estado Atual de autenticação, também criado por useState e guardado em "auth"
 
     */
-    const [auth, setAuth] = useState<AuthState>({ user: null, token: null})
+  const [auth, setAuth] = useState<AuthState>({ user: null, token: null })
 
-    /*
+  /*
         useEffect ele é um hook do react utilizado para executar efeitos colaterais, no caso aqui, após o usuário atualizar a página
         ele verifica o que tem dentro do localStorage trazendo para a variável "u" o user do localStorage (que está logado)
         semelhantemente traz para a variavel "t" o token que estava logado antes da reinicialização da página, após uma verificação de existência
@@ -37,13 +35,13 @@ export function useAuth(){
         inicialização, na mesma sessão ele não roda novamente, se atualizar a página reinicializasse a sessão então ele toda novamente e ponto.
     */
 
-    useEffect(() => {
-        const t = localStorage.getItem('token')
-        const u = localStorage.getItem('user')
-        if(t && u) setAuth({token: t, user: JSON.parse(u) })
-    }, [])
+  useEffect(() => {
+    const t = localStorage.getItem('token')
+    const u = localStorage.getItem('user')
+    if (t && u) setAuth({ token: t, user: JSON.parse(u) })
+  }, [])
 
-    /*
+  /*
         useCallback é um hook do react usado para memorizar uma função
         ele evita que a função seja recriada toda vez que o component renderiza
         aqui também temos o array de dependências vazio ", []" fazendo ela ser criada apenas uma vez, sem o useCallback o react
@@ -61,14 +59,13 @@ export function useAuth(){
 
     */
 
-    const login = useCallback((token: string, user: User) => {
-        localStorage.setItem('token', token)
-        localStorage.setItem('user', JSON.stringify(user))
-        setAuth({token, user})
-    }, [])
+  const login = useCallback((token: string, user: User) => {
+    localStorage.setItem('token', token)
+    localStorage.setItem('user', JSON.stringify(user))
+    setAuth({ token, user })
+  }, [])
 
-
-    /*
+  /*
         useCallback novamente memoriza a função para evitar que seja recriada toda vez que o componente renderiza, com o array de dependencia vazio
         criando ela apenas na inicialização (no mount).
         não recebe parâmetros, e remove a persistência do localStorage quando remove do localStorage o item token e user atual da sessão, 
@@ -78,17 +75,17 @@ export function useAuth(){
         com o try e finally ele tenta remover do localStorage o token e o user e se por algum erro raro ele não remover...
         o finally que roda com erro ou sem erro, ativa o setauth 
     */
-    
-    const logout = useCallback(() => {
-        try{
-            localStorage.removeItem('token')
-            localStorage.removeItem('user')
-        }finally{
-            setAuth({ token: null, user: null })
-        }
-    }, [])
 
-        // retorna e exporta as funções de autenticação do estado e o estado completo criado aqui dentro, no caso, 
-        // auth = {user: 'user' e token: 'token'} nos tipos descritos no começo quando fora declarado o auth e setAuth
-    return { ...auth, login, logout}
+  const logout = useCallback(() => {
+    try {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+    } finally {
+      setAuth({ token: null, user: null })
+    }
+  }, [])
+
+  // retorna e exporta as funções de autenticação do estado e o estado completo criado aqui dentro, no caso,
+  // auth = {user: 'user' e token: 'token'} nos tipos descritos no começo quando fora declarado o auth e setAuth
+  return { ...auth, login, logout }
 }
