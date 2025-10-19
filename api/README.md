@@ -2,6 +2,32 @@
 
 **Objetivo: Documentação essencial da API (execução, configuração, migrações, rotas e ferramentas).**
 
+> **About this document (read first)**
+>
+> Este README é a **fonte única de verdade (SSOT)** da **API** do App Igreja.
+> Contém **setup**, **scripts**, **variáveis de ambiente**, **estrutura**, **padrões de rotas**,
+> **erros e logs**, **boas práticas de segurança** e **procedimentos de execução/testes**.
+>
+> ### Como este README está organizado
+> 1. **Stack & Pré-requisitos** — linguagem/runtime, banco, ferramentas.
+> 2. **Configuração (.env)** — variáveis obrigatórias e exemplos.
+> 3. **Scripts NPM** — dev, build, test, lint, seed, migrate.
+> 4. **Como rodar em desenvolvimento** — passo a passo.
+> 5. **Estrutura de pastas** — camadas da aplicação (ex.: `src/`).
+> 6. **Padrões de rotas & convenções** — naming, versionamento (`/v1`), status codes.
+> 7. **Banco de dados** — migrations, seeds, conexão e reset local.
+> 8. **Erros, logs e observabilidade** — formato de erro e logging.
+> 9. **Segurança** — CORS, Auth, tokens/secrets.
+> 10. **Testes** — como rodar e onde ficam.
+> 11. **Problemas comuns** — checklist de falhas e correções.
+> 12. **Anexos/Links úteis** — docs complementares do módulo.
+> 13. **Changelog (curto)** — alterações relevantes do README.
+>
+> ### Convenções deste módulo
+> - **Idioma**: pastas/arquivos em **inglês**; conteúdo do README em **português**.
+> - **Segurança**: nunca versionar segredos; `.env` via exemplo.
+> - **Regra de manutenção**: se alterar **rotas/DB/ambiente/scripts/erros**, **atualize este README no mesmo PR**.
+
 ---
 
 ## Sumário
@@ -15,9 +41,12 @@
 - [Prisma (ORM)](#prisma-orm)
   - [Migrations](#migrations)
   - [Prisma Studio](#prisma-studio)
-- [CORS](#cors)
-- [Rotas disponíveis (atual)](#rotas-disponíveis-atual)
-- [Erros comuns](#erros-comuns)
+- [Padrões de rotas & convenções](#padrões-de-rotasconvenções)
+- [Erros, logs e observabilidade](#erros-logs-e-observabilidade)
+- [Segurança](#segurança)
+- [Testes](#testes)
+- [Problemas comuns](#problemas-comuns)
+- [Anexos/Links úteis](#anexoslinks-úteis)
 - [Comentários do autor](#comentários-do-autor)
 
 ---
@@ -202,8 +231,9 @@ routes → (middlewares) → controllers → services → repositories
 ```
 
 ---
+## Padrões de rotas/convenções
 
-## CORS
+### CORS
 - A API expõe CORS para permitir chamadas do front:
 
 - `.env`
@@ -227,7 +257,7 @@ routes → (middlewares) → controllers → services → repositories
 
 ---
 
-## Rotas disponíveis (atual)
+### Rotas disponíveis (atual)
 
 `GET /health`
 - Status da API.
@@ -248,7 +278,7 @@ routes → (middlewares) → controllers → services → repositories
 
 ---
 
-## Erros comuns
+### Problemas comuns
 
 - CORS bloqueando: confira CORS_ORIGIN e se o front está em http://localhost:5173.
 - Falha de conexão ao DB: verifique DATABASE_URL, credenciais e se o MySQL está rodando.

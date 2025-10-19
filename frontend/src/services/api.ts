@@ -8,8 +8,8 @@
 */
 
 import axios from 'axios'
-import type {AxiosError, InternalAxiosRequestConfig, AxiosResponse} from 'axios'
-
+import type { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios'
+import type { HttpError } from '../types/http.types'
 /* 
     1. Crio uma instância com base na URL base, ao mesmo tempo exporto ela para utilizá-la em qualquer lugar do app
     2. "axios.create" ao invés de axios.get{} direto, criamos uma instância com 
@@ -24,10 +24,9 @@ Nota:
 
 */
 export const api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL,
-    timeout: 15000, // evita request travado
+  baseURL: import.meta.env.VITE_API_BASE_URL,
+  timeout: 15000, // evita request travado
 })
-
 
 /*
 1. api.interceptors.request.use(...) cria uma função que vai rodar antes de toda a requisição sair do browser,
@@ -58,15 +57,22 @@ export const api = axios.create({
     Se trocar o nome do header, o backend pode rejeitar (ele espera Authorization)
 */
 
-api.interceptors.request.use( (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('token')
-    if (token) {
-        config.headers = config.headers ?? {}   
-        config.headers.Authorization = `Bearer ${token}`
-    }
-    return config
+api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    config.headers = config.headers ?? {}
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
 })
 
+// função de normalização de erros
+function toHttpError(e: unknown): HttpError {
+  const erro = e as AxiosError<{ message?: string }>
+  const status = erro.response?.status ?? 0
+  const message = erro.response?.data?.message ?? erro.message ?? 'Erro inesperado'
+  return { status, message, cause: e }
+}
 
 /*
 1. api.interceptors.response.use(onFulfilled, onRejected)
@@ -88,10 +94,10 @@ Registra dois callbacks:
     Se transformar a resposta aqui, todo o app passa a receber essa "nova forma"; é poderoso, mas exige muito cuidado.
 */
 api.interceptors.response.use(
-    (res: AxiosResponse) => res,
-    
-    (error: AxiosError) => {
-        if (error.response?.status === 401)
-        return Promise.reject(error)
-    }
+  (res: AxiosResponse) => {
+    return res.data
+  },
+  (error: AxiosError) => {
+    if (error.response?.status === 401) return Promise.reject(toHttpError(error))
+  },
 )
