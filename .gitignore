@@ -32,6 +32,10 @@ node_modules/
 # IDEs, Editor directories and files
 .idea/
 .vscode/*
+# VSCode
+.vscode/
+api/.vscode/
+frontend/.vscode/
 !.vscode/extensions.json
 .idea
 .DS_Store
