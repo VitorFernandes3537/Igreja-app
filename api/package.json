@@ -1,37 +1,39 @@
 {
-  "name": "adbras-app-api",
+  "name": "api",
   "version": "1.0.0",
-  "description": "",
-  "main": "./src/utils/server.js",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "cross-env NODE_ENV=development nodemon ./src/utils/server.js --watch src --ext js,json",
-    "start": "cross-env NODE_ENV=production node ./src/utils/server.js",
-    "migrate:dev": "cross-env NODE_ENV=development npx prisma migrate dev",
-    "db:reset": "cross-env NODE_ENV=development npx prisma migrate reset -f",
-    "studio": "cross-env NODE_ENV=development npx prisma studio"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/VitorFernandes3537/adbras-app-api.git"
-  },
-  "keywords": [],
-  "author": "VitorFer.dev",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/VitorFernandes3537/adbras-app-api/issues"
-  },
-  "homepage": "https://github.com/VitorFernandes3537/adbras-app-api#readme",
+  "test": "echo \"Error: no test specified\" && exit 1",
+  "dev": "cross-env NODE_ENV=development tsx src/utils/server.ts",
+  "dev:server": "cross-env NODE_ENV=development tsx src/utils/server.ts",
+  "build": "tsc && tsc-alias",
+  "start": "cross-env NODE_ENV=production node dist/utils/server.js",
+
+  "migrate:dev": "cross-env NODE_ENV=development npx prisma migrate dev",
+  "db:reset": "cross-env NODE_ENV=development npx prisma migrate reset -f",
+  "studio": "cross-env NODE_ENV=development npx prisma studio",
+  "prisma:generate": "prisma generate",
+  "prisma:migrate": "prisma migrate dev"
+},
+
   "dependencies": {
     "app-igreja": "file:..",
     "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
-    "express": "^5.1.0"
+    "dotenv": "^16.0.0",
+    "express": "^5.1.0",
+    "@prisma/client": "^6.17.1"
   },
   "devDependencies": {
-    "@prisma/client": "^6.17.1",
+    "concurrently": "^9.2.1",
     "cross-env": "^10.1.0",
     "nodemon": "^3.1.10",
-    "prisma": "^6.17.1"
+    "prisma": "^6.17.1",
+    "typescript": "^5.6.0",
+    "tsx": "^4.19.0",
+    "tsc-alias": "^1.8.10",
+    "@types/node": "^22.5.0",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17"
   }
 }
