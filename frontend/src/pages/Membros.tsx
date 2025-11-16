@@ -5,7 +5,15 @@ export default function Membros() {
   // aqui toda a função react precisa retornar o será renderizado na tela
   // o retorno é feito em JSX (JavaScript + XML) isso é o que transforma funções JS em "telas visuais"
   return (
-    /* div parte principal da página o container raiz
+    <div className="min-h-screen bg-slate-900 text-white p-8">
+      <h1 className="text-2xl font-bold">Membros</h1>
+      <p className="opacity-80 mt-2">Lista/CRUD virá aqui</p>
+    </div>
+  )
+}
+
+
+/* div parte principal da página o container raiz
             tailwindcss:
                 min-h-screen: garante que a altura mínuma seja a altura da tela, tomando o fundo completo
                 bg-slate-900: define a cor do fundo em um tom cinza-escuro
@@ -17,9 +25,3 @@ export default function Membros() {
                 mt-2: é uma margem topo de respiro, entre o título e o texto abaixo
             o p aqui está como "placeholder" uma dica de onde vai o conteúdo real quando implementado 
         */
-    <div className="min-h-screen bg-slate-900 text-white p-8">
-      <h1 className="text-2xl font-bold">Membros</h1>
-      <p className="opacity-80 mt-2">Lista/CRUD virá aqui</p>
-    </div>
-  )
-}

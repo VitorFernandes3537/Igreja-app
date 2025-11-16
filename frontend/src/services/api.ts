@@ -1,103 +1,188 @@
-// from 'Axios' traz a biblioteca/função principal do Axios
-/* 
-    {AxiosError, Internal AxiosRequesterConfig, AxiosResponse} 
-    Tipos do TypeScript que descrevem os objetos do Axios:
-    AxiosError: a "forma" do erro quando alguma chamada da errado/falha. útil pra tipar interceptores e catch
-    InternalAxiosRequestConfig: descreve o objeto de configuração de uma requisição dentro do 
-    interceptor de request - v1
-*/
+import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios";
+import type { ApiResponse, ApiError, BackendErrorData } from "@/services/http.types";
 
-import axios from 'axios'
-import type { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios'
-import type { HttpError } from '../types/http.types'
-/* 
-    1. Crio uma instância com base na URL base, ao mesmo tempo exporto ela para utilizá-la em qualquer lugar do app
-    2. "axios.create" ao invés de axios.get{} direto, criamos uma instância com 
-    configurações padrão (URLB base, timemout, interceptores)
-    3. baseURL: define a URL base para todas as chamadas que vem do .env
-    4. import.meta.env é do VITE então apenas variáveis de ambiente que começarem com VITE_ aparecem no Frontend
-    5. Timeout: tempo limite em ms. Se servidor não responder em 15s, o Axios cancela e lança um erro de timeout.
+const BASE_URL = import.meta.env.VITE_API_URL?.toString() || "http://localhost:3001";
 
-Nota: 
-    Sem o BASE_URL temos que passar URLs completas em cada chamadas.
-    Se remover TIMEOUT, requisições podem ficar penduradas por muito tempo.
+// retorna uma função sem parâmetros que retorna (string ou null) e 
+// serve para você injetar a forma de buscar o token
 
-*/
-export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
-  timeout: 15000, // evita request travado
-})
+type TokenGetter = () => string | null;
 
-/*
-1. api.interceptors.request.use(...) cria uma função que vai rodar antes de toda a requisição sair do browser,
-    é tipo um "Filtro" que prepara a requisição antes de enviá-la.
 
-2. (config: InternalAxiosRequestConfig) => {...} 
-    config é o pacote da requisição: URL final do destino, método, headers, body
-3. Tipei com InternalAxiosRequestConfig para o TypeScript saber o que existe ali.
-    no caso, são as InternalAxiosRequestConfig: "As configurações internas de requisições do Axios"
+let tokenGetter: TokenGetter = () => {
 
-4. if(token) {...} só anexa headers SE houver token
-
-5. "config.headers = config.headers ?? {}"
-    Garante que headers seja um objeto as vezes vem "undefined"
-    com ?? {} semelhante a função coalesce(), significa se for null ou undefined, use {}.
-
-6. "config.headers.Authorization = `bearer ${token}`" 
-    Adciona header.Authorization no padrão bearer que o backend espera.
-    Depois disso. autentica todas as requisições e envia.
-    
-    Nota: 
-    bearer (esquema de autenticação padrão: RFC6750, usando OAuth2/JWT)
-
-7. rerturn config
-    Devolve a configuração alterada para o Axios prosseguir
-
-    Nota: Se não retornar as "config" a requisição trava.
-    Se trocar o nome do header, o backend pode rejeitar (ele espera Authorization)
-*/
-
-api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const token = localStorage.getItem('token')
-  if (token) {
-    config.headers = config.headers ?? {}
-    config.headers.Authorization = `Bearer ${token}`
+  try{
+    return localStorage.getItem("auth.token")
+  }catch{
+    return null;
   }
-  return config
-})
 
-// função de normalização de erros
-function toHttpError(e: unknown): HttpError {
-  const erro = e as AxiosError<{ message?: string }>
-  const status = erro.response?.status ?? 0
-  const message = erro.response?.data?.message ?? erro.message ?? 'Erro inesperado'
-  return { status, message, cause: e }
+};
+
+
+export const setTokenGetter = (getter: TokenGetter) => {
+  
+  tokenGetter = getter
+
+};
+
+type UnauthorizedHandler = () => void;
+const UnauthorizedHandlers = new Set<UnauthorizedHandler>();
+
+export const onUnauthorized = (fn: UnauthorizedHandler) => {
+
+  UnauthorizedHandlers.add(fn);
+
+  return () => {UnauthorizedHandlers.delete(fn)};
+
+};
+
+const notifyUnauthorized = () => {
+
+  UnauthorizedHandlers.forEach((fn) => fn());
+
 }
 
-/*
-1. api.interceptors.response.use(onFulfilled, onRejected)
-Registra dois callbacks:
-    - onFulfilled: roda quando a reposta vem com sucesso (status 2xx).
-    - onRejected: roda quando houve erro (status 4xx/5xx, timeout, sem reposta...).
+// Acima temos um mini sistema de eventos globais para "sessão expirada/401", 
+// para que o app inteiro consiga reagir (logout, redirecionar, limpar estado) sem espelhar lógica nos componentes
 
-2. (response: AxiosResponse) => response
-    - o parmetro da arrowfunction é tipada com o AxiosResponse, No sucesso, apenas devolvemos a própria resposta.
-    Nota: poderiamos transformar dados nesse momento, mas manter a "transparencia" é o mais simples.
 
-3. (error: AxiosError) => { return Promise.reject(error) }
-    outra arrowfuction com parâmetro "error" tipado com AxiosError (a "forma" do erro do Axios), quando acontece 
-    um erro, propagamos o erro para quem o chamou (o try/catch do componente, por exemplo.)
-    Promise.reject(error) mantém o fluxo padrão de erro do Axios
+// Toda a comunicação com o backend do App igreja passa por aqui
+export const api = axios.create({
+  baseURL: BASE_URL,
+  timeout: 15000,
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  },
+});
 
-    Nota: Se não tratar o erro nem rejeitar, a chamada "parece" ficar silenciosa - o chamador não recebe o erro 
-    corretamente.
-    Se transformar a resposta aqui, todo o app passa a receber essa "nova forma"; é poderoso, mas exige muito cuidado.
-*/
+
+// ↓ Antes de QUALQUER requisição sair do front, esse interceptor injeta o Authorization: Bearer <token>.
+// Você não precisa lembrar disso em cada chamada. 
+
+api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  const token = tokenGetter();
+  if(token) {
+    config.headers = config.headers ?? {};
+
+    if (!config.headers.Authorization) {
+      config.headers.Authorization = `Bearer ${token}` 
+    }
+  }
+
+  return config;
+});
+
+
+function normalizeSuccess<T = unknown>(
+  status: number,
+  payload: unknown
+): ApiResponse<T> {
+  if (payload !== null && typeof payload === "object" && "data" in (payload as Record<string, unknown>)) {
+    const obj = payload as {
+      data: T;
+      message?: string;
+      meta?: unknown;
+    };
+
+    return {
+      ok: status >= 200 && status < 300,
+      status,
+      data: obj.data,
+      message: obj.message,
+      meta: obj.meta,
+    };
+  }
+
+  return {
+    ok: status >= 200 && status < 300,
+    status,
+    data: payload as T,
+  };
+}
+
+//qualquer erro do Axios é convertido em ApiError com mensagem amigável, 
+// código semântico, detalhes brutos e gatilho de 401 global.
+
+function normalizeError(err: unknown): ApiError {
+  const axErr = err as AxiosError<BackendErrorData>;
+  const status = axErr.response?.status ?? 0;
+
+  const data = axErr.response?.data;
+
+  const backendMessage = axErr.response?.data?.message || axErr.response?.data?.error || 
+  axErr.message || "Erro inesperado. tente novamente.";
+
+  const apiError: ApiError = {
+    ok: false,
+    status,
+    message: backendMessage,
+    code: data?.code,
+    details: data ?? axErr.toJSON?.() ?? null,
+  }
+
+  if (status === 401) {
+    notifyUnauthorized();
+  }
+
+  return apiError;
+}
+
+// ---------- Interceptor de RESPONSE ----------
+// Mantém o AxiosResponse na resolução e transforma QUALQUER erro em ApiError
+
 api.interceptors.response.use(
-  (res: AxiosResponse) => {
-    return res.data
-  },
-  (error: AxiosError) => {
-    if (error.response?.status === 401) return Promise.reject(toHttpError(error))
-  },
+
+  (response) => response,
+  (error) => {
+    const apiError = normalizeError(error)
+    return Promise.reject(apiError)
+  }
+
 )
+
+// ---------- Helpers HTTP com tipagem ----------
+// Todos os helpers:
+// - recebem AxiosResponse da instância `api`
+// - convertem para ApiResponse<T> com normalizeSuccess
+// - em caso de erro, o Promise.reject já vem com ApiError do interceptor acima
+
+
+export const httpGet = async <T> (
+  url: string,
+  params?: unknown
+): Promise<ApiResponse<T>> => {
+  const response = await api.get<T>(url,{params});
+  return normalizeSuccess<T>(response.status, response.data);
+};
+
+
+export const httpPost = async <T>(
+  url: string,
+  body?: unknown
+): Promise<ApiResponse<T>> => {
+  const response = await api.post<T>(url, body);
+  return normalizeSuccess<T>(response.status, response.data);
+};
+
+export const httpPut = async <T>(
+  url: string,
+  body?: unknown
+): Promise<ApiResponse<T>> => {
+  const response = await api.put<T>(url, body);
+  return normalizeSuccess<T>(response.status, response.data);
+};
+
+export const httpPatch = async <T>(
+  url: string,
+  body?: unknown
+): Promise<ApiResponse<T>> => {
+  const response = await api.patch<T>(url, body);
+  return normalizeSuccess<T>(response.status, response.data);
+};
+
+export const httpDelete = async <T> (url: string): Promise<ApiResponse<T>> => {
+  const response = await api.delete<T>(url);
+  return normalizeSuccess<T>(response.status, response.data);
+};

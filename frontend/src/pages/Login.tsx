@@ -1,35 +1,23 @@
-// importando o tipo FormEvent, o tipo formulário de evento do React, para tipar o evento do formulário
 import type { FormEvent } from 'react'
-// import { api } from '@/lib/api'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@/hooks/useAuth'
 
-// declara um component react chamado Login() e exporta como padrão do arquivo, exportar como defaut permite
-// importar com qualquer nome... ex: import login from './Login'
 export default function Login() {
-  // async marca que pode usar await onde esperará algo acontecer para continuar.
-  // parâmetro e tipado = Um evento de formulário cujo alvo é um HTMLFormElement
+  const { login } = useAuth();
+  const navigate = useNavigate(); 
+
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
-    // impede o padrão de comportamente do navegador que é recarregar a página ao enviar um form
-    e.preventDefault()
-    // cria um objeto do tipo FormData com base no formulário que disparou o evento. Uma "fotografia" dos campos
-    // e.currentTarget: é uma referência ao elemento que está com o listener (a tag <form>)
-    const form = new FormData(e.currentTarget)
-    // isso faz a leitura dos campos pelo atributo name, e faz normalização pois se o .get trouxer null,
-    // ele converte para string vazia
-    const email = String(form.get('email') || '')
-    // DESCOMENTAR PARA USAR API const senha = String(form.get('senha') || '')
-    // um mock para fluir sem backend, para validar rápida as rotas ja funcionando.
-    const data = {
-      token: 'dev-token',
-      user: { id: '1', nome: 'usuarioteste', email },
-    }
-    // usa a persistência do localStorage para setar o login com os dados e token do user
-    // guardando o estado global de sessão
-    localStorage.setItem('token', data.token)
-    localStorage.setItem('user', JSON.stringify(data.user))
-    // escolhido pela simplicidade do MVP redireciona para '/'
-    window.location.href = '/'
+    e.preventDefault(); // evita reload da página ao chamar a função
+
+    const form = new FormData(e.currentTarget);
+    const email = String(form.get("email") || "");
+    const senha = String(form.get("senha") || "");
+
+    await login({email, senha});
+
+    navigate("/dashboard", {replace: true});
   }
-  //explicação abaixo
+
   return (
     <div className="min-h-screen grid place-items-center bg-slate-900 text-white p-6">
       <form onSubmit={onSubmit} className="w-full max-w-sm space-y-3">
