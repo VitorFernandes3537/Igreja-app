@@ -4,6 +4,7 @@ import Dashboard from '@/pages/Dashboard'
 import Membros from '@/pages/Membros'
 import PublicLayout  from '@/layouts/PublicLayout'
 import PrivateLayout from '@/layouts/PrivateLayout'
+import { RouteGuard } from './RouteGuard'
 
 /**
  * Definição das rotas com createBrowserRouter:
@@ -17,18 +18,27 @@ export const router = createBrowserRouter([
     element: <Navigate to="/dashboard" replace />,
   },
   {
+    // bloco público: só layouts/páginas que não exigem login
     element: <PublicLayout />,
     children: [
       { path: '/login', element: <Login /> },
     ],
   },
   {
-    element: <PrivateLayout />,
+    // bloco protegido: tudo aqui dentro passa pelo RouteGuard
+    element: <RouteGuard />,
     children: [
-      { path: '/dashboard', element: <Dashboard /> },
-      { path: '/membros', element: <Membros /> },
-    ],
+      { 
+        // layout das rotas privadas (navbar, sidebar, etc.)
+        element: <PrivateLayout />,
+        children: [
+          { path: '/dashboard', element: <Dashboard /> },
+          { path: '/membros', element: <Membros /> },
+        ],
+      },
+    ]
   },
-  // Rota coringa 404, não encontrou a slug? manda pra o login
+  
+  // Rota coringa (código HTTP === 404), não encontrou a slug? manda pra o login
   { path: '*', element: <Navigate to="/login" replace /> },
 ])
